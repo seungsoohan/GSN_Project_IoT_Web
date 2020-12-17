@@ -4,39 +4,66 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Device LOG</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js" charset="utf-8"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <!-- CSS only -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
     <!-- JavaScript Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js" charset="utf-8"></script>
+
+
+
 
 
   </head>
+
   <body>
+
     <div class="container">
-      <div class="form-check form-switch">
-        <input class="form-check-input" type="checkbox" id="pirSensorDisplay" checked>
-        <label class="form-check-label" for="pirSensorDisplay">움직임감지 보기</label>
-      </div>
-      <div class="form-check form-switch">
-        <input class="form-check-input" type="checkbox" id="soundSensorDisplay" checked>
-        <label class="form-check-label" for="soundSensorDisplay">소리감지 보기</label>
-      </div>
-      <div class="form-check form-switch">
-        <input class="form-check-input" type="checkbox" id="intersectDisplay" checked>
-        <label class="form-check-label" for="intersectDisplay">겹치는부분 보기</label>
+
+      <p class="text-center">회의실 사용현황(<span id="logTimeDisplay">3</span>시간)</p>
+
+      <div class="row">
+        <div class="col-sm">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="pirSensorDisplay" checked>
+            <label class="form-check-label" for="pirSensorDisplay">움직임감지 보기</label>
+          </div>
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="soundSensorDisplay" checked>
+            <label class="form-check-label" for="soundSensorDisplay">소리감지 보기</label>
+          </div>
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="intersectDisplay" checked>
+            <label class="form-check-label" for="intersectDisplay">겹치는부분 보기</label>
+          </div>
+        </div>
+        <!-- <div class="col-sm">
+
+        </div> -->
+        <div class="col-sm">
+          <a class="btn btn-primary" href="http://3.34.171.104/iot/office/log/?n=10&type=0" role="button">10분</a>
+          <a class="btn btn-primary" href="http://3.34.171.104/iot/office/log/?n=60&type=0" role="button">1시간</a>
+          <a class="btn btn-primary" href="http://3.34.171.104/iot/office/log/?n=180&type=0" role="button">3시간</a>
+          <a class="btn btn-primary" href="http://3.34.171.104/iot/office/log/?n=540&type=0" role="button">9시간</a>
+          <a class="btn btn-primary" href="http://3.34.171.104/iot/office/log/?n=1440&type=0" role="button">1일</a>
+        </div>
       </div>
     </div>
 
-    <canvas id="myChart" width="400" height="400"></canvas>
+    <canvas id="myChart"></canvas>
 
   </body>
 </html>
 
+<style media="screen">
+  #myChart {
+    /* height: 35vh; */
+  }
+</style>
 <script>
 
 var myChart;
@@ -100,7 +127,7 @@ let sensorType = new window.URLSearchParams(window.location.search).get("type");
 
 dataNums = parseInt(dataNums);
 if(dataNums == null || dataNums == 0 || dataNums == "" || isNaN(dataNums)) {
-  dataNums = 100;
+  dataNums = 120;
   console.log("num parameter error");
 }
 sensorType = parseInt(sensorType);
@@ -109,8 +136,10 @@ if(sensorType == null || sensorType == "" || isNaN(sensorType)) {
   console.log("sensor parameter error");
 }
 
+$("#logTimeDisplay").text((dataNums/60).toFixed(1));
 
-// console.log(dataNums);
+
+
 $.ajax({
       url: "https://93sqldop2g.execute-api.ap-northeast-2.amazonaws.com/v1/device/log?n=" + dataNums,
       cache: false
@@ -216,6 +245,7 @@ $.ajax({
             },
             options: {
               maintainAspectRatio: false,
+              // responsive: false,
               tooltips: {
                 mode: 'point'
               },
